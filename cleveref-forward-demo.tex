@@ -3,11 +3,12 @@
     title in boldface,
     % title in sffamily,
     emphasize theorems,
-    simple name,
+    simple name, % not suitable for French, German, etc.
+    name in link,
 ]{einfart}
 \usepackage{ProjLib}
 
-\usepackage{cleveref-forward}
+\usepackage[crefthe]{cleveref-forward}
 \usepackage{changepage,todonotes,marginnote}
 
 %%================================
@@ -49,6 +50,9 @@
         ExplSyntaxOn,ExplSyntaxOff,
         NewDocumentCommand,NewDocumentEnvironment,
         cref,Cref,
+        crefthe,Crefthe,
+        cpageref,
+        cpagerefthe,
         namecref,nameCref,
         labelcref,labelCref,
         restorelabel,
@@ -58,6 +62,8 @@
         SetForwardReferenceStyle,
         SetForwardReferenceStyleInsideMath,
         SetForwardReferenceStyleOutsideMath,
+        SetForwardReferenceRefForm,
+        SetForwardReferencePagerefForm,
         todo,
         marginnote,
       }
@@ -123,10 +129,10 @@
 \end{lemma}
 
 \begin{theorem}\label{thm:test}
-    Test.
+    Text.
 \end{theorem}
 \begin{proof}\restorelabel{thm:test} % Notice the use of \restorelabel here
-    Some proof that involves \cref[used by]{lem:result} and the equations \labelcref[used by and on]{eq:Euler}, \labelcref[used by]{eq:1,eq:2} in the next section. Here, \lstinline|\restorelabel| makes sure that this \texttt{proof} environment is being recognized as the theorem itself.
+    Some proof that involves the \cref[used by]{lem:result} and the equations \labelcref[used by and on]{eq:Euler}, \labelcref[used by]{eq:1,eq:2} in the next section. Here, \lstinline|\restorelabel| makes sure that this \texttt{proof} environment is being recognized as the theorem itself.
 \end{proof}
 
 \subsection{Equations}
@@ -155,6 +161,8 @@ If you wish to apply the mode \commandoption{used on}, or \commandoption{used by
 
 
 \section{Customizations}
+
+\begingroup
 
 Here is how you change the appearing text:
 
@@ -237,10 +245,10 @@ We use the same example:
 \end{lemma}
 
 \begin{theorem}\label{thm:test'}
-    Test.
+    Text.
 \end{theorem}
 \begin{proof}\restorelabel{thm:test'} % Notice the use of \restorelabel here
-    Some proof that involves \cref[used by]{lem:result'} and the equations \labelcref[used by and on]{eq:Euler'}, \labelcref[used by]{eq:1',eq:2'}.
+    Some proof that involves the \cref[used by]{lem:result'} and the equations \labelcref[used by and on]{eq:Euler'}, \labelcref[used by]{eq:1',eq:2'}.
 \end{proof}
 
 \begin{equation}\label{eq:Euler'}
@@ -289,10 +297,10 @@ The result would be somewhat like the following (assuming that your document has
     \end{lemma}
 
     \begin{theorem}\label{thm:test''}
-        Test.
+        Text.
     \end{theorem}
     \begin{proof}\restorelabel{thm:test''} % Notice the use of \restorelabel here
-        Some proof that involves \cref[used by]{lem:result''} and the equations \labelcref[used by and on]{eq:Euler''}, \labelcref[used by]{eq:1'',eq:2''}.
+        Some proof that involves the \cref[used by]{lem:result''} and the equations \labelcref[used by and on]{eq:Euler''}, \labelcref[used by]{eq:1'',eq:2''}.
     \end{proof}
 
     \begin{equation}\label{eq:Euler''}
@@ -325,6 +333,172 @@ By the way, here is the default setting for the style:
     \vspace{.15\baselineskip}%
   }
 \end{code}
+
+\endgroup
+
+\SetForwardReferenceStyle
+  {%
+    \marginnote{\normalfont#1}%
+  }
+\SetForwardReferenceStyleInsideMath
+  {%
+    \marginnote{\normalfont#1}%
+  }
+
+%% You can safely ignore the code between \ExplSyntaxOn and \ExplSyntaxOff
+%% They are just for resetting the theorem referencing style for the rest of the document
+\ExplSyntaxOn
+\input{create-theorem-preset-names} % simple-name mode is not suitable for French, German, etc.
+\exp_args:No \SetTheorem { \c_projlib_theorem_supported_clist, theorem-with-name } % remove the text style in the references
+  {
+    name style = {
+      , crefname style = { }
+      , Crefname style = { }
+      , numbering style = { }
+    }
+  }
+\ExplSyntaxOff
+
+
+\section{Besides writing in English}
+
+When writing in some European languages, it is possible to specify the definite article and/or declension in the optional argument of \lstinline|\cref| to ensure that the grammar is correct, provided that you have enabled the package option \packageoption{crefthe}.
+
+\subsection{Example in French}
+
+\UseLanguage{French}
+
+\vspace{-1.5\baselineskip}
+\setlength{\marginparwidth}{24em}
+\setlength{\marginparsep}{-18em}
+\begin{adjustwidth}{}{20em}
+    \begin{lemma}\label{lem:result_fr}
+        Quelques résultats préliminaires (voir l'équation \labelcref[used by]{eq:1_fr}).
+    \end{lemma}
+
+    \begin{theorem}\label{thm:test_fr}
+        Texte.
+    \end{theorem}
+    \begin{proof}\restorelabel{thm:test_fr}
+        % Notice the use of \cref[de,...]
+        Quelques lignes de preuves résultant \cref[de, used by]{lem:result_fr} et des équations \labelcref[used by and on]{eq:Euler_fr}, \labelcref[used by]{eq:1_fr,eq:2_fr}.
+    \end{proof}
+
+    \begin{equation}\label{eq:Euler_fr}
+        \mathrm{e}^{\mathrm{i}\pi} + 1 = 0.
+    \end{equation}
+    \begin{align}
+        1 &= 0 + 1 \label{eq:1_fr}\\
+        2 &= 1 + 1 \label{eq:2_fr}
+    \end{align}
+\end{adjustwidth}
+
+\subsection{Example in German}
+
+\UseLanguage{German}
+
+% \SetUsedOnMessageText{Erscheint auf~#1.}
+% \SetUsedByMessageText{Erscheint #1.}
+% \SetUsedByAndOnMessageText{Erscheint #1 auf~#2.}
+% \SetForwardReferenceRefForm{\crefthe[in,dat.]}
+% \SetForwardReferencePagerefForm{\cpagerefthe[noun]}
+
+\vspace{-1.5\baselineskip}
+\setlength{\marginparwidth}{24em}
+\setlength{\marginparsep}{-18em}
+\begin{adjustwidth}{}{20em}
+    \begin{lemma}\label{lem:result_de}
+        Einige vorläufige Ergebnisse (siehe Gleichung \labelcref[used by]{eq:1_de}).
+    \end{lemma}
+
+    \begin{theorem}\label{thm:test_de}
+        Text.
+    \end{theorem}
+    \begin{proof}\restorelabel{thm:test_de}
+        % Notice the use of \cref[die, akk.,...]
+        Einige Beweise, \cref[die, akk., used by]{lem:result_de} und die Gleichungen \labelcref[used by and on]{eq:Euler_de}, \labelcref[used by]{eq:1_de,eq:2_de}.
+    \end{proof}
+
+    \begin{equation}\label{eq:Euler_de}
+        \mathrm{e}^{\mathrm{i}\pi} + 1 = 0.
+    \end{equation}
+    \begin{align}
+        1 &= 0 + 1 \label{eq:1_de}\\
+        2 &= 1 + 1 \label{eq:2_de}
+    \end{align}
+\end{adjustwidth}
+
+\subsection{Example in Italian}
+
+\UseLanguage{Italian}
+
+\vspace{-1.5\baselineskip}
+\setlength{\marginparwidth}{24em}
+\setlength{\marginparsep}{-18em}
+\begin{adjustwidth}{}{20em}
+    \begin{lemma}\label{lem:result_it}
+      Alcuni risultati preliminari (vedi l'equazione \labelcref[used by]{eq:1_it}).
+    \end{lemma}
+
+    \begin{theorem}\label{thm:test_it}
+        Testo.
+    \end{theorem}
+    \begin{proof}\restorelabel{thm:test_it}
+        % Notice the use of \cref[da,...]
+        Alcune linee di prova derivanti \cref[da, used by]{lem:result_it} e dalle equazioni \labelcref[used by and on]{eq:Euler_it}, \labelcref[used by]{eq:1_it,eq:2_it}.
+    \end{proof}
+
+    \begin{equation}\label{eq:Euler_it}
+        \mathrm{e}^{\mathrm{i}\pi} + 1 = 0.
+    \end{equation}
+    \begin{align}
+        1 &= 0 + 1 \label{eq:1_it}\\
+        2 &= 1 + 1 \label{eq:2_it}
+    \end{align}
+\end{adjustwidth}
+
+\subsection{Example in Spanish}
+
+\UseLanguage{Spanish}
+
+\vspace{-1.5\baselineskip}
+\setlength{\marginparwidth}{24em}
+\setlength{\marginparsep}{-18em}
+\begin{adjustwidth}{}{20em}
+    \begin{lemma}\label{lem:result_es}
+      Algunos resultados preliminares (véase la ecuación \labelcref[used by]{eq:1_es}).
+    \end{lemma}
+
+    \begin{theorem}\label{thm:test_es}
+        Texto.
+    \end{theorem}
+    \begin{proof}\restorelabel{thm:test_es}
+        % Notice the use of \cref[de,...]
+        Algunas líneas de demostración resultantes \cref[de, used by]{lem:result_es} y las ecuaciones \labelcref[used by and on]{eq:Euler_es}, \labelcref[used by]{eq:1_es,eq:2_es}.
+    \end{proof}
+
+    \begin{equation}\label{eq:Euler_es}
+        \mathrm{e}^{\mathrm{i}\pi} + 1 = 0.
+    \end{equation}
+    \begin{align}
+        1 &= 0 + 1 \label{eq:1_es}\\
+        2 &= 1 + 1 \label{eq:2_es}
+    \end{align}
+\end{adjustwidth}
+
+\UseLanguage{English}
+
+\subsection{Regarding the customization}
+
+If you wish to change the content of the messages in such cases, you might need to be careful about the definite article and declension involved. For example, in German, if you wish to change the text to \textquote{Erscheint in ... auf ...} (\emph{Appears in ... on ...}), you need to write:
+\begin{code}
+\SetUsedOnMessageText{Erscheint auf~#1.}
+\SetUsedByMessageText{Erscheint #1.}
+\SetUsedByAndOnMessageText{Erscheint #1 auf~#2.}
+\SetForwardReferenceRefForm{\crefthe[in,dat.]}
+\SetForwardReferencePagerefForm{\cpagerefthe[noun]}
+\end{code}
+which set the \lstinline|\cref| command to use the definite article \textquote{in} and the declension \textquote{Dativ}, and hide the definite article when using \lstinline|\cpageref|.
 
 
 \end{document}

@@ -44,11 +44,18 @@
     , ubao           .meta:n     = { default = UsedByAndOn }
     , ubo            .meta:n     = { default = UsedByAndOn }
 
+    , crefthe        .bool_set:N = \l__crfwd_crefthe_enabled_bool
+    , crefthe        .initial:n  = { false }
+
     , unknown        .code:n     = { }
   }
 \ProcessKeyOptions [ cleveref-forward ]
 
 \RequirePackage { cleveref }
+\bool_if:NT \l__crfwd_crefthe_enabled_bool
+  {
+    \RequirePackage { crefthe }
+  }
 
 \newcommand*{\@setcpagerefrange}[3]{%
     \@@setcpagerefrange{#1}{#2}{cref}{#3}}
@@ -149,39 +156,9 @@
 \RequirePackage { iflang }
 
 % The default text
-\SetUsedOnMessageText
-  {
-    \IfLanguageName{english}
-        { (Used~on~#1.) } {}
-    \IfLanguageName{french}
-        { (Apparaît~en~#1.) } {}
-    \IfLanguageName{ngerman}
-        { (Wird~auf~#1.) } {}
-    \IfLanguageName{spanish}
-        { (Aparece~en~#1.) } {}
-  }
-\SetUsedByMessageText
-  {
-    \IfLanguageName{english}
-        { (Used~by~#1.) } {}
-    \IfLanguageName{french}
-        { (Apparaît~dans~#1.) } {}
-    \IfLanguageName{ngerman}
-        { (Wird~in~#1.) } {}
-    \IfLanguageName{spanish}
-        { (Aparece~en~#1.) } {}
-  }
-\SetUsedByAndOnMessageText
-  {
-    \IfLanguageName{english}
-        { (Used~by~#1~on~#2.) } {}
-    \IfLanguageName{french}
-        { (Apparaît~dans~#1~en~#2.) } {}
-    \IfLanguageName{ngerman}
-        { (Wird~in~#1~auf~#2.) } {}
-    \IfLanguageName{spanish}
-        { (Aparece~en~#1~en~#2.) } {}
-  }
+\SetUsedOnMessageText { (Used~on~#1.) }
+\SetUsedByMessageText { (Used~by~#1.) }
+\SetUsedByAndOnMessageText { (Used~by~#1~on~#2.) }
 
 \cs_new:Nn \__crfwd_usedon_message:n { }
 \NewDocumentCommand \UsedOnMessage { m } { \__crfwd_usedon_message:n { #1 } }
@@ -419,6 +396,113 @@
     \vspace{.15\baselineskip}
   }
 
+\cs_new:Nn \__crfwd_cref_adjusted:n { \cref{#1} }
+\cs_new:Nn \__crfwd_cpageref_adjusted:n { \cpageref{#1} }
+\cs_new:Npn \__crfwd_adjust_cref_user: { }
+\cs_new:Npn \__crfwd_adjust_cpageref_user: { }
+\NewDocumentCommand \SetForwardReferenceRefForm { m }
+  {
+    % \cs_set:Npn \__crfwd_cref_adjusted:n ##1 { #1{##1} }
+    \cs_set:Npn \__crfwd_adjust_cref_user:
+      {
+        \cs_set:Npn \__crfwd_cref_adjusted:n ####1 { #1{####1} }
+      }
+  }
+\NewDocumentCommand \SetForwardReferencePagerefForm { m }
+  {
+    % \cs_set:Npn \__crfwd_cpageref_adjusted:n ##1 { #1{##1} }
+    \cs_set:Npn \__crfwd_adjust_cpageref_user:
+      {
+        \cs_set:Npn \__crfwd_cpageref_adjusted:n ####1 { #1{####1} }
+      }
+  }
+\bool_if:NTF \l__crfwd_crefthe_enabled_bool
+  {
+    \AtBeginDocument
+      {
+        \addto\extrasfrench{\crefthename{page}[le]{page}[les]{pages}}
+        \addto\extrasspanish{\crefthename{page}[la]{página}[las]{páginas}}
+      }
+    \SetUsedOnMessageText
+      {
+        \IfLanguageName{english}
+            { (Used~on~#1.) } {}
+        \IfLanguageName{french}
+            { (Apparaît~en~#1.) } {}
+        \IfLanguageName{ngerman}
+            { (Wird~auf~#1.) } {}
+        \IfLanguageName{italian}
+            { (Appare~a~#1.) } {}
+        \IfLanguageName{spanish}
+            { (Aparece~en~#1.) } {}
+      }
+    \SetUsedByMessageText
+      {
+        \IfLanguageName{english}
+            { (Used~by~#1.) } {}
+        \IfLanguageName{french}
+            { (Apparaît~dans~#1.) } {}
+        \IfLanguageName{ngerman}
+            { (Wird~#1.) } {}
+        \IfLanguageName{italian}
+            { (Appare~#1.) } {}
+        \IfLanguageName{spanish}
+            { (Aparece~en~#1.) } {}
+      }
+    \SetUsedByAndOnMessageText
+      {
+        \IfLanguageName{english}
+            { (Used~by~#1~on~#2.) } {}
+        \IfLanguageName{french}
+            { (Apparaît~dans~#1~en~#2.) } {}
+        \IfLanguageName{ngerman}
+            { (Wird~#1~auf~#2.) } {}
+        \IfLanguageName{italian}
+            { (Appare~#1~a~#2.) } {}
+        \IfLanguageName{spanish}
+            { (Aparece~en~#1~en~#2.) } {}
+      }
+    \cs_new:Nn \__crfwd_adjust_cref_commands:
+      {
+        \IfLanguageName{english}
+          {
+            \cs_set:Npn \__crfwd_cref_adjusted:n ##1 { \cref{##1} }
+            \cs_set:Npn \__crfwd_cpageref_adjusted:n ##1 { \cpageref{##1} }
+          } {}
+        \IfLanguageName{french}
+          {
+            \cs_set:Npn \__crfwd_cref_adjusted:n ##1 { \crefthe{##1} }
+            \cs_set:Npn \__crfwd_cpageref_adjusted:n ##1 { \cpagerefthe[noun]{##1} }
+          } {}
+        \IfLanguageName{ngerman}
+          {
+            \cs_set:Npn \__crfwd_cref_adjusted:n ##1 { \crefthe[von,dat.]{##1} }
+            \cs_set:Npn \__crfwd_cpageref_adjusted:n ##1 { \cpagerefthe[noun]{##1} }
+          } {}
+        \IfLanguageName{italian}
+          {
+            \cs_set:Npn \__crfwd_cref_adjusted:n ##1 { \crefthe[in]{##1} }
+            \cs_set:Npn \__crfwd_cpageref_adjusted:n ##1 { \cpagerefthe[noun]{##1} }
+          } {}
+        \IfLanguageName{spanish}
+          {
+            \cs_set:Npn \__crfwd_cref_adjusted:n ##1 { \crefthe{##1} }
+            \cs_set:Npn \__crfwd_cpageref_adjusted:n ##1 { \cpagerefthe{##1} }
+          } {}
+        \__crfwd_adjust_cref_user:
+        \__crfwd_adjust_cpageref_user:
+      }
+  }
+  {
+    \cs_new:Nn \__crfwd_adjust_cref_commands:
+      {
+        \cs_set:Npn \__crfwd_cref_adjusted:n ##1 { \cref{##1} }
+        \cs_set:Npn \__crfwd_cpageref_adjusted:n ##1 { \cpageref{##1} }
+        \__crfwd_adjust_cref_user:
+        \__crfwd_adjust_cpageref_user:
+      }
+  }
+
 \cs_new:Nn \__crfwd_printer_generic:nnn
   {
     % Check if the reference #1@<LabelName>@1 exists
@@ -446,6 +530,7 @@
   }
 \cs_new:Nn \__crfwd_printer:nn
   {
+    \__crfwd_adjust_cref_commands:
     \__crfwd_printer_generic:nnn { #1 } { #2 }
       {
         % Print `UsedOn` message by calling \cpageref with the parameter clist above
@@ -454,24 +539,25 @@
         %%   \par\clist_use:Nn \l_tmpa_clist {\par}\par
         \str_case:xn { \str_foldcase:n { #1 } }
           {
-            {used-on}        { \UsedOnMessage { \cpageref{\l_tmpa_clist} } }
-            {used~on}        { \UsedOnMessage { \cpageref{\l_tmpa_clist} } }
-            {used on}        { \UsedOnMessage { \cpageref{\l_tmpa_clist} } }
-            {uo}             { \UsedOnMessage { \cpageref{\l_tmpa_clist} } }
-            {used-by}        { \UsedByMessage { \cref{\l_tmpa_clist} } }
-            {used~by}        { \UsedByMessage { \cref{\l_tmpa_clist} } }
-            {used by}        { \UsedByMessage { \cref{\l_tmpa_clist} } }
-            {ub}             { \UsedByMessage { \cref{\l_tmpa_clist} } }
-            {used-by-and-on} { \UsedByAndOnMessage { \cref{\l_tmpa_clist} } { \cpageref{\l_tmpa_clist} } }
-            {used~by~and~on} { \UsedByAndOnMessage { \cref{\l_tmpa_clist} } { \cpageref{\l_tmpa_clist} } }
-            {used by and on} { \UsedByAndOnMessage { \cref{\l_tmpa_clist} } { \cpageref{\l_tmpa_clist} } }
-            {ubao}           { \UsedByAndOnMessage { \cref{\l_tmpa_clist} } { \cpageref{\l_tmpa_clist} } }
-            {ubo}            { \UsedByAndOnMessage { \cref{\l_tmpa_clist} } { \cpageref{\l_tmpa_clist} } }
+            {used-on}        { \UsedOnMessage { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used~on}        { \UsedOnMessage { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used on}        { \UsedOnMessage { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {uo}             { \UsedOnMessage { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used-by}        { \UsedByMessage { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } }
+            {used~by}        { \UsedByMessage { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } }
+            {used by}        { \UsedByMessage { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } }
+            {ub}             { \UsedByMessage { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } }
+            {used-by-and-on} { \UsedByAndOnMessage { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used~by~and~on} { \UsedByAndOnMessage { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used by and on} { \UsedByAndOnMessage { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {ubao}           { \UsedByAndOnMessage { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {ubo}            { \UsedByAndOnMessage { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
           }
       }
   }
 \cs_new:Nn \__crfwd_printer_math:nn
   {
+    \__crfwd_adjust_cref_commands:
     \__crfwd_printer_generic:nnn { #1 } { #2 }
       {
         % Print `UsedOn` message by calling \cpageref with the parameter clist above
@@ -491,19 +577,19 @@
           }
         \str_case:xn { \str_foldcase:n { #1 } }
           {
-            {used-on}        { \UsedOnMessageMath { \exp_not:V \cpageref{\l_tmpa_clist} } }
-            {used~on}        { \UsedOnMessageMath { \exp_not:V \cpageref{\l_tmpa_clist} } }
-            {used on}        { \UsedOnMessageMath { \exp_not:V \cpageref{\l_tmpa_clist} } }
-            {uo}             { \UsedOnMessageMath { \exp_not:V \cpageref{\l_tmpa_clist} } }
-            {used-by}        { \UsedByMessageMath { \cref{\l_tmpa_clist} } }
-            {used~by}        { \UsedByMessageMath { \cref{\l_tmpa_clist} } }
-            {used by}        { \UsedByMessageMath { \cref{\l_tmpa_clist} } }
-            {ub}             { \UsedByMessageMath { \cref{\l_tmpa_clist} } }
-            {used-by-and-on} { \UsedByAndOnMessageMath { \cref{\l_tmpa_clist} } { \exp_not:V \cpageref{\l_tmpa_clist} } }
-            {used~by~and~on} { \UsedByAndOnMessageMath { \cref{\l_tmpa_clist} } { \exp_not:V \cpageref{\l_tmpa_clist} } }
-            {used by and on} { \UsedByAndOnMessageMath { \cref{\l_tmpa_clist} } { \exp_not:V \cpageref{\l_tmpa_clist} } }
-            {ubao}           { \UsedByAndOnMessageMath { \cref{\l_tmpa_clist} } { \exp_not:V \cpageref{\l_tmpa_clist} } }
-            {ubo}            { \UsedByAndOnMessageMath { \cref{\l_tmpa_clist} } { \exp_not:V \cpageref{\l_tmpa_clist} } }
+            {used-on}        { \UsedOnMessageMath { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used~on}        { \UsedOnMessageMath { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used on}        { \UsedOnMessageMath { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {uo}             { \UsedOnMessageMath { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used-by}        { \UsedByMessageMath { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } }
+            {used~by}        { \UsedByMessageMath { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } }
+            {used by}        { \UsedByMessageMath { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } }
+            {ub}             { \UsedByMessageMath { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } }
+            {used-by-and-on} { \UsedByAndOnMessageMath { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used~by~and~on} { \UsedByAndOnMessageMath { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {used by and on} { \UsedByAndOnMessageMath { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {ubao}           { \UsedByAndOnMessageMath { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
+            {ubo}            { \UsedByAndOnMessageMath { \__crfwd_cref_adjusted:n { \l_tmpa_clist } } { \__crfwd_cpageref_adjusted:n { \l_tmpa_clist } } }
           }
       }
   }
