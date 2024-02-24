@@ -13,8 +13,8 @@
 %%
 \NeedsTeXFormat{LaTeX2e}[2022-06-01]
 \ProvidesExplPackage{cleveref-forward}
-    {2024/02/24} {}
-    {Forward-referencing functionality for cleveref}
+  {2024/02/24} {}
+  {Forward-referencing functionality for cleveref}
 
 \keys_define:nn { cleveref-forward }
   {
@@ -115,6 +115,10 @@
 \NewDocumentCommand \UsedOnMessageText { m } { \__crfwd_usedon_message_text:n { #1 } }
 \NewDocumentCommand \UsedByMessageText { m } { \__crfwd_usedby_message_text:n { #1 } }
 \NewDocumentCommand \UsedByAndOnMessageText { m m } { \__crfwd_usedbyandon_message_text:nn { #1 } { #2 } }
+% Alternative names
+\NewDocumentCommand \UsedOnMessageContent { m } { \__crfwd_usedon_message_text:n { #1 } }
+\NewDocumentCommand \UsedByMessageContent { m } { \__crfwd_usedby_message_text:n { #1 } }
+\NewDocumentCommand \UsedByAndOnMessageContent { m m } { \__crfwd_usedbyandon_message_text:nn { #1 } { #2 } }
 
 \NewDocumentCommand \SetUsedOnMessageText { m }
   {
@@ -125,6 +129,19 @@
     \cs_set:Nn \__crfwd_usedby_message_text:n { #1 }
   }
 \NewDocumentCommand \SetUsedByAndOnMessageText { m }
+  {
+    \cs_set:Nn \__crfwd_usedbyandon_message_text:nn { #1 }
+  }
+% Alternative names
+\NewDocumentCommand \SetUsedOnMessageContent { m }
+  {
+    \cs_set:Nn \__crfwd_usedon_message_text:n { #1 }
+  }
+\NewDocumentCommand \SetUsedByMessageContent { m }
+  {
+    \cs_set:Nn \__crfwd_usedby_message_text:n { #1 }
+  }
+\NewDocumentCommand \SetUsedByAndOnMessageContent { m }
   {
     \cs_set:Nn \__crfwd_usedbyandon_message_text:nn { #1 }
   }
@@ -597,7 +614,15 @@
             \clist_put_right:No \l__crfwd_local_options_clist { \l__crfwd_default_package_option_tl }
             \clist_map_inline:Nn \l__crfwd_local_options_clist
               {
-                \str_case:xnT { \str_foldcase:n { ####1 } } { {nouse} {} }
+                \str_case:xnT { \str_foldcase:n { ####1 } }
+                  {
+                    {no-use}  {}
+                    {no~use}  {}
+                    {no use}  {}
+                    {not-use} {}
+                    {not~use} {}
+                    {not use} {}
+                  }
                   {
                     \clist_remove_all:Nn \l__crfwd_local_options_clist { ####1 }
                     \bool_gset_true:N \g__crfwd_ref_no_use_bool
@@ -722,7 +747,12 @@
           {
             \str_case:xnT { \str_foldcase:n { ##1 } }
               {
-                {nouse} {}
+                {no-use}  {}
+                {no~use}  {}
+                {no use}  {}
+                {not-use} {}
+                {not~use} {}
+                {not use} {}
               }
               {
                 \clist_remove_all:Nn \l__crfwd_local_options_clist { ##1 }
