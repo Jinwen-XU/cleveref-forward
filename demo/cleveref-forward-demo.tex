@@ -1,5 +1,5 @@
 \documentclass[
-    use style = plain,
+    % use style = plain,
     title in boldface,
     % title in sffamily,
     emphasize theorems,
@@ -179,7 +179,7 @@ Here is how you change the appearing text:
 \SetUsedByAndOnMessageText{Appears in~#1 on~#2.}
 
 \bigskip
-And here is an example of setting the message style with \textsf{todonotes}:
+And here is an example of setting the message style with the package \textsf{todonotes}:
 
 \begin{code}
 \SetForwardReferenceStyle
@@ -265,7 +265,7 @@ We use the same example:
 \bigskip
 As you might have noticed, \lstinline|\SetForwardReferenceStyleOutsideMath| is for setting the style of those messages that appear outside the equations.
 
-There is also a \lstinline|\SetForwardReferenceStyleInsideMath|, which triggers the message immediately at where you placed the label. This way it is only plausible to put the message inside the margin. For example, you may configure:
+There is also a \lstinline|\SetForwardReferenceStyleInsideMath|, which triggers the message immediately at where you placed the label. This way it is only plausible to put the message inside the margin. For example, with the package \textsf{marginnote} loaded, you may configure:
 
 \begin{code}
 \SetForwardReferenceStyle
