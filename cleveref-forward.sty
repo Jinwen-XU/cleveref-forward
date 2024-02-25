@@ -13,7 +13,7 @@
 %%
 \NeedsTeXFormat{LaTeX2e}[2022-06-01]
 \ProvidesExplPackage{cleveref-forward}
-  {2024/02/24} {}
+  {2024/02/25} {}
   {Forward-referencing functionality for cleveref}
 
 \keys_define:nn { cleveref-forward }
@@ -57,14 +57,16 @@
     \RequirePackage { crefthe }
   }
 
-\newcommand*{\@setcpagerefrange}[3]{%
+% Fix for cleveref in order to work with long range of pages
+% See https://tex.stackexchange.com/a/620066
+\providecommand*{\@setcpagerefrange}[3]{%
     \@@setcpagerefrange{#1}{#2}{cref}{#3}}
-\newcommand*{\@setCpagerefrange}[3]{%
+\providecommand*{\@setCpagerefrange}[3]{%
     \@@setcpagerefrange{#1}{#2}{Cref}{#3}}
-\newcommand*{\@setlabelcpagerefrange}[3]{%
+\providecommand*{\@setlabelcpagerefrange}[3]{%
     \@@setcpagerefrange{#1}{#2}{labelcref}{#3}}
 
-% Temporary fix for cleveref in order to work with xr-hyper
+% Fix for cleveref in order to work with xr-hyper
 % See https://tex.stackexchange.com/a/708445
 \def\cref@getref#1#2{%
   \expandafter\let\expandafter#2\csname r@#1@cref\endcsname%
