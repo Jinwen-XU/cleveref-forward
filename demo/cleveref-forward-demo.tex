@@ -8,6 +8,8 @@
 ]{einfart}
 \usepackage{ProjLib}
 
+\setmonofont[Scale=.9]{Iosevka}
+
 \usepackage[crefthe]{cleveref-forward}
 \usepackage{changepage,todonotes,marginnote}
 
@@ -32,7 +34,7 @@
     breaklines = true,
     frame = lines,
     backgroundcolor = \color{code-background},
-    flexiblecolumns = true,
+    basewidth = .5em,
     escapeinside = {(*}{*)},
     alsoletter = {_,:},
     % numbers = left,
@@ -81,8 +83,8 @@
 \lstnewenvironment{code}{\setstretch{1.05}\LocallyStopLineNumbers}{\ResumeLineNumbers\vspace{-.3\baselineskip}\vspace{-.5\parskip}}
 \lstnewenvironment{code*}{\setstretch{1.05}\lstset{numbers=left}\LocallyStopLineNumbers}{\ResumeLineNumbers\vspace{-.3\baselineskip}\vspace{-.5\parskip}}
 
-\newcommand{\packageoption}[1]{\texttt{\textcolor{code-option}{#1}}}
-\newcommand{\commandoption}[1]{\texttt{\textcolor{code-keys}{#1}}}
+\newcommand{\packageoption}[1]{\textcolor{code-option}{\texttt{#1}}}
+\newcommand{\commandoption}[1]{\textcolor{code-keys}{\texttt{#1}}}
 
 %%================================
 %% tip
@@ -157,7 +159,7 @@ It can also be used for some other types, such as items in \texttt{enumerate} li
 
 \section{Specify a default option}
 
-If you wish to apply the mode \commandoption{used on}, or \commandoption{used by}, or \commandoption{used by and on} to all \lstinline|\cref| (and \lstinline|\labelcref|, etc.), you can use the package option \packageoption{default = }\meta{mode}. Then you don't need to write it everywhere. And if you wish to manually change this \meta{mode} somewhere, you can still specify it as the command option; and if you don't want the message to display for some references, you may also use the option \commandoption{no use} on the corresponding \lstinline|\label| to disable the related messages.
+If you wish to apply the mode \commandoption{used on}, or \commandoption{used by}, or \commandoption{used by and on} to all \lstinline|\cref| (and \lstinline|\labelcref|, etc.), you can use the package option \packageoption{default=}\meta{mode}. Then you don't need to write it everywhere. And if you wish to manually change this \meta{mode} somewhere, you can still specify it as the command option; and if you don't want the message to display for some references, you may also use the option \commandoption{no use} on the corresponding \lstinline|\label| to disable the related messages.
 
 
 \section{Customizations}
@@ -348,7 +350,7 @@ By the way, here is the default setting for the style:
 %% You can safely ignore the code between \ExplSyntaxOn and \ExplSyntaxOff
 %% They are just for resetting the theorem referencing style for the rest of the document
 \ExplSyntaxOn
-\input{create-theorem-preset-names} % simple-name mode is not suitable for French, German, etc.
+\input{create-theorem-preset-names-cleveref} % simple-name mode is not suitable for French, German, etc.
 \exp_args:No \SetTheorem { \c_projlib_theorem_supported_clist, theorem-with-name } % remove the text style in the references
   {
     name style = {
