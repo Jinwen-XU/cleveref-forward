@@ -36,7 +36,7 @@
     backgroundcolor = \color{code-background},
     basewidth = .5em,
     escapeinside = {(*}{*)},
-    alsoletter = {_,:},
+    alsoletter = {_:},
     % numbers = left,
     % firstnumber = last,
     numberstyle = \scriptsize\ttfamily,
@@ -114,7 +114,7 @@
   }
 
 
-\title{Demonstration on the usage and configuration of \textquote{\textsf{cleveref-forward}}}
+\title{\textsc{demonstration on the usage and configuration of}\\[.3\baselineskip]\fbox{\textsf{cleveref-forward}}}
 \author{}
 \date{\today[only-year-month]}
 
@@ -122,7 +122,7 @@
 
 \maketitle
 
-\section{With the default configuration}
+\section{Demonstration with the default configuration}
 
 \subsection{Theorem-like environments}
 
@@ -137,7 +137,7 @@
     Some proof that involves the \cref[used by]{lem:result} and the equations \labelcref[used by and on]{eq:Euler}, \labelcref[used by]{eq:1,eq:2} in the next section. Here, \lstinline|\restorelabel| makes sure that this \texttt{proof} environment is being recognized as the theorem itself.
 \end{proof}
 
-\subsection{Equations}
+\subsection{Displayed equations}
 
 By default, the forward referencing infomation is placed immediately after the equation.
 
@@ -159,7 +159,7 @@ It can also be used for some other types, such as items in \texttt{enumerate} li
 
 \section{Specify a default option}
 
-If you wish to apply the mode \commandoption{used on}, or \commandoption{used by}, or \commandoption{used by and on} to all \lstinline|\cref| (and \lstinline|\labelcref|, etc.), you can use the package option \packageoption{default=}\meta{mode}. Then you don't need to write it everywhere. And if you wish to manually change this \meta{mode} somewhere, you can still specify it as the command option; and if you don't want the message to display for some references, you may also use the option \commandoption{no use} on the corresponding \lstinline|\label| to disable the related messages.
+If you wish to apply the mode \commandoption{used on}, or \commandoption{used by}, or \commandoption{used by and on} to all \lstinline|\cref| (and \lstinline|\labelcref|, etc.), you can use the package option \packageoption{default=}\meta{mode}. Then you don't need to write it everywhere. And if you wish to manually change this \meta{mode} somewhere, you can still specify it as the command option; and if you don't want the message to display for some references, you may also use the option \commandoption{no use} (or \commandoption{not use}) on the corresponding \lstinline|\label| to disable the related messages.
 
 
 \section{Customizations}
@@ -490,17 +490,17 @@ When writing in some European languages, it is possible to specify the definite 
 
 \UseLanguage{English}
 
-\subsection{Regarding the customization}
+\subsection{Regarding the customization for languages with declensions}
 
 If you wish to change the content of the messages in such cases, you might need to be careful about the definite article and declension involved. For example, in German, if you wish to change the text to \textquote{Erscheint in ... auf ...} (\emph{Appears in ... on ...}), you need to write:
 \begin{code}
 \SetUsedOnMessageText{Erscheint auf~#1.}
 \SetUsedByMessageText{Erscheint #1.}
 \SetUsedByAndOnMessageText{Erscheint #1 auf~#2.}
-\SetForwardReferenceRefForm{\crefthe[in,dat.]}
-\SetForwardReferencePagerefForm{\cpagerefthe[noun]}
+\SetForwardReferenceRefForm{\crefthe[in,(*\commandoption{dat.}*)]}
+\SetForwardReferencePagerefForm{\cpagerefthe[(*\commandoption{noun}*)]}
 \end{code}
-which set the \lstinline|\cref| command to use the definite article \textquote{in} and the declension \textquote{Dativ}, and hide the definite article when using \lstinline|\cpageref|.
+which set the \lstinline|\cref| command to use the definite article \textquote{in} and the declension \textquote{Dativ} (via the command option \commandoption{dat.}), and hide the definite article when using \lstinline|\cpageref| (via the command option \commandoption{noun}). For more detailed usage of these commands, please refer to the documentation of the package \textsf{crefthe}.
 
 
 \end{document}
